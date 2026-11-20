@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>稀釋與單位換算 | 我的實驗室工具箱</title>
+  <link rel="stylesheet" href="../../style.css">
+  <style>
+    .upload-zone {
+      border: 2px dashed #93c5fd;
+      background-color: #f0f9ff;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1.5rem;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #0284c7;
+      background-color: #e0f2fe;
+    }
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-num {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .badge-err {
+      background-color: #fee2e2;
+      color: #991b1b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .badge-ok {
+      background-color: #d1fae5;
+      color: #065f46;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #0284c7;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .nav-back:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- 側邊導覽 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">🔬</span>
+        <div>
+          <h2>實驗室工具箱</h2>
+          <span class="sub-text">Lab Toolbox</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="../../index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">工具箱首頁</span>
+        </a>
+        <div class="nav-section-title">目前工具</div>
+        <a href="../../index.html" class="nav-item">
+          <span class="nav-icon">🧪</span>
+          <span class="nav-text">溶液稀釋換算機</span>
+          <span class="badge badge-success">第1週</span>
+        </a>
+        <a href="index.html" class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">稀釋與單位換算</span>
+          <span class="badge badge-success">上線</span>
+        </a>
+        <div class="nav-section-title">規劃中</div>
+        <button class="nav-item disabled">
+          <span class="nav-icon">📈</span>
+          <span class="nav-text">ICP-MS 檢量線計算機</span>
+          <span class="badge badge-muted">敬請期待</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="privacy-badge">
+          <span class="shield-icon">🛡️</span>
+          <div>
+            <strong>100% 本機端運算</strong>
+            <p>數據絕不上傳任何伺服器</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 主內容區 -->
+    <main class="main-content">
+      <a href="../../index.html" class="nav-back">← 返回工具箱首頁</a>
+
+      <header class="topbar">
+        <div class="page-title-area">
+          <h1>📊 稀釋與單位換算 (微量分析報表)</h1>
+          <p>批次上傳儀器輸出資料表，自動進行單位正規化與基質公式換算（水樣報 µg/L，土壤/食品報 mg/kg）。</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="tag tag-safe">🔒 100% 瀏覽器本機運算</span>
+        </div>
+      </header>
+
+      <!-- 提示訊息 -->
+      <div id="alert-container" class="alert-container"></div>
+
+      <!-- 操作卡片 -->
+      <div class="action-card">
+        <div class="action-card-info">
+          <h3>快捷操作</h3>
+          <p>您可以點選載入教學用範例資料快速體驗，或是直接拖曳自己的 CSV 檔案進行換算。</p>
+        </div>
+        <div class="action-btn-group">
+          <button id="btn-load-example" class="btn btn-primary">
+            📂 載入範例資料
+          </button>
+          <button id="btn-export-csv" class="btn btn-secondary">
+            📥 匯出報告 CSV
+          </button>
+          <button id="btn-clear" class="btn btn-outline">
+            🔄 清除表格
+          </button>
+        </div>
+      </div>
+
+      <!-- 檔案上傳區塊 -->
+      <section class="card">
+        <div class="card-body">
+          <div id="upload-zone" class="upload-zone">
+            <div class="upload-icon">📁</div>
+            <h3 style="color:#0369a1; margin-bottom:0.4rem;">點擊選擇 CSV 檔案，或將檔案拖曳至此處</h3>
+            <p style="color:#64748b; font-size:0.88rem;">支援標準格式：樣品編號, 樣品類型, 元素, 上機濃度, 單位, 稀釋倍數, 定容體積 (mL), 樣品重 (g)</p>
+            <input type="file" id="file-input" accept=".csv,text/csv" style="display:none;">
+          </div>
+
+          <!-- 統計摘要列 -->
+          <div id="stats-bar" class="stats-bar" style="display:none;">
+            <div class="stat-pill">
+              <span>總分析筆數：</span>
+              <span id="stat-total" class="stat-num">0</span>
+            </div>
+            <div class="stat-pill" style="border-left: 4px solid var(--success);">
+              <span>正常換算：</span>
+              <span id="stat-success" class="stat-num" style="color:#059669;">0</span>
+            </div>
+            <div class="stat-pill" style="border-left: 4px solid var(--danger);">
+              <span>異常/缺失：</span>
+              <span id="stat-error" class="stat-num" style="color:#dc2626;">0</span>
+            </div>
+          </div>
+
+          <!-- 結果表格 -->
+          <div class="table-responsive">
+            <table class="data-table" id="results-table">
+              <thead>
+                <tr>
+                  <th style="width: 45px;">#</th>
+                  <th>樣品編號</th>
+                  <th>樣品類型</th>
+                  <th>元素</th>
+                  <th>上機濃度</th>
+                  <th>原始單位</th>
+                  <th>稀釋倍數</th>
+                  <th>定容體積 (mL)</th>
+                  <th>樣品重 (g)</th>
+                  <th class="th-result">報告濃度</th>
+                  <th class="th-result">報告單位</th>
+                  <th>狀態 / 備註</th>
+                </tr>
+              </thead>
+              <tbody id="results-tbody">
+                <tr>
+                  <td colspan="12" style="text-align:center; padding: 2rem; color:#94a3b8;">
+                    尚無資料，請點擊「載入範例資料」或上傳 CSV 檔案。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 換算公式與規格說明卡片 -->
+      <section class="card">
+        <div class="card-header">
+          <h2>📐 換算公式與基質規範說明</h2>
+        </div>
+        <div class="card-body prose">
+          <ul>
+            <li><strong>水樣 (報告單位：µg/L)</strong>：
+              $$\text{報告濃度 } (\mu\text{g/L}) = C_{\text{上機}} (\text{換算至 } \mu\text{g/L}) \times \text{稀釋倍數}$$
+              （水樣屬均相液態，不使用定容體積與樣品重）
+            </li>
+            <li><strong>土壤與食品 (報告單位：mg/kg)</strong>：
+              $$\text{報告濃度 } (\text{mg/kg}) = \frac{C_{\text{上機}} (\text{換算至 } \text{mg/L}) \times \text{稀釋倍數} \times \text{定容體積 } (\text{mL})}{\text{樣品重 } (\text{g})}$$
+              （固體前處理消解後定容，報告濃度以質量基準回報；若上機濃度為 $\mu\text{g/L}$ 則自動除以 1000 轉換）
+            </li>
+            <li><strong>容錯機制</strong>：若遇數據缺失（如空值）或定容稱重不合理，系統會清晰標記並保留行數，供後續追蹤與覆核。</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 先載入純計算模組，再載入畫面邏輯模組 -->
+  <script src="calculator.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>

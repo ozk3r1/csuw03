@@ -19,8 +19,18 @@
       </div>
 
       <nav class="nav-menu">
-        <div class="nav-section-title">工具選單</div>
-        <button class="nav-item active" data-view="dilution">
+        <button class="nav-item active" data-view="dashboard">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">工具箱大廳</span>
+        </button>
+
+        <div class="nav-section-title">實驗室小工具</div>
+        <a href="tools/units/index.html" class="nav-item" style="text-decoration:none;">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">稀釋與單位換算</span>
+          <span class="badge badge-success">上線</span>
+        </a>
+        <button class="nav-item" data-view="dilution">
           <span class="nav-icon">🧪</span>
           <span class="nav-text">溶液稀釋換算機</span>
           <span class="badge badge-success">第1週</span>
@@ -61,19 +71,80 @@
       <!-- 頂部資訊列 -->
       <header class="topbar">
         <div class="page-title-area">
-          <h1 id="page-title">🧪 溶液稀釋換算機</h1>
-          <p id="page-desc">依據 $C_1V_1 = C_2V_2$ 精準計算母液取樣體積與稀釋劑補足量，支援單點速算與多階梯度配製。</p>
+          <h1 id="page-title">🏠 實驗室工具箱大廳</h1>
+          <p id="page-desc">歡迎使用實驗室日常數據分析小工具，請由下方卡片挑選您需要的功能。</p>
         </div>
         <div class="topbar-actions">
-          <span class="tag tag-safe">🔒 離線計算安全</span>
+          <span class="tag tag-safe">🔒 100% 離線純本機計算</span>
         </div>
       </header>
 
       <!-- 訊息提示區域 -->
       <div id="alert-container" class="alert-container"></div>
 
-      <!-- 工具 1：溶液稀釋換算機視圖 -->
-      <div id="view-dilution" class="content-view active">
+      <!-- 視圖 1：工具箱儀表板大廳 (Dashboard Hub) -->
+      <div id="view-dashboard" class="content-view active">
+        <div class="dashboard-grid">
+          <!-- 卡片 1：稀釋與單位換算 (新上線) -->
+          <div class="tool-card" style="border: 2px solid #bae6fd; background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);">
+            <div>
+              <div class="tool-card-header">
+                <span class="tool-card-title">📊 稀釋與單位換算</span>
+                <span class="badge badge-success">🌟 新上線</span>
+              </div>
+              <p>微量分析檢測報表專用。批次上傳 CSV，自動依樣品基質（水樣報 µg/L、土壤與食品報 mg/kg）進行前處理定容稱重與單位正規化換算。</p>
+            </div>
+            <a href="tools/units/index.html" class="btn btn-primary" style="text-decoration:none; justify-content:center;">
+              進入工具使用 →
+            </a>
+          </div>
+
+          <!-- 卡片 2：溶液稀釋換算機 -->
+          <div class="tool-card">
+            <div>
+              <div class="tool-card-header">
+                <span class="tool-card-title">🧪 溶液稀釋換算機</span>
+                <span class="badge badge-success">第 1 週</span>
+              </div>
+              <p>依據 $C_1V_1 = C_2V_2$ 精準計算母液取樣體積與稀釋劑補足量，支援單點速算、標準梯度多點配製與微量吸管操作指引。</p>
+            </div>
+            <button class="btn btn-outline-primary" style="justify-content:center;" onclick="switchToTool('dilution')">
+              打開稀釋計算機 →
+            </button>
+          </div>
+
+          <!-- 卡片 3：ICP-MS 檢量線計算機 (規劃中) -->
+          <div class="tool-card tool-card-disabled">
+            <div>
+              <div class="tool-card-header">
+                <span class="tool-card-title">📈 ICP-MS 檢量線計算機</span>
+                <span class="badge badge-muted">敬請期待</span>
+              </div>
+              <p>輸入標準品濃度與訊號值，自動擬合線性回歸、計算相關係數 $R^2$、內插樣品未知濃度與異常殘差分析。</p>
+            </div>
+            <button class="btn btn-outline" style="justify-content:center;" disabled>
+              即將推出
+            </button>
+          </div>
+
+          <!-- 卡片 4：多批次數據彙整工具 (規劃中) -->
+          <div class="tool-card tool-card-disabled">
+            <div>
+              <div class="tool-card-header">
+                <span class="tool-card-title">📑 多批次數據彙整工具</span>
+                <span class="badge badge-muted">敬請期待</span>
+              </div>
+              <p>跨批次樣品數據比對、QC 平行樣與空白樣自動檢核、計算偏差率 %RPD 並將多份報表一鍵合併匯出。</p>
+            </div>
+            <button class="btn btn-outline" style="justify-content:center;" disabled>
+              即將推出
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 視圖 2：溶液稀釋換算機視圖 -->
+      <div id="view-dilution" class="content-view">
         <!-- 頂部操作列：載入範例、匯出 CSV、清除 -->
         <div class="action-card">
           <div class="action-card-info">
@@ -181,7 +252,7 @@
         </section>
       </div>
 
-      <!-- 視圖：規格與隱私聲明 -->
+      <!-- 視圖 3：規格與隱私聲明 -->
       <div id="view-about" class="content-view">
         <section class="card">
           <div class="card-header">
@@ -193,7 +264,7 @@
               <li><strong>完全本機端運算 (100% Client-Side)</strong>：所有運算均在您的瀏覽器本機記憶體中完成，無網路傳輸，兼顧零延遲與完全隱私。</li>
               <li><strong>範例資料機制</strong>：線上「載入範例資料」讀取自 <code>examples/</code> 虛擬公開示範檔，本機開發用的 <code>sample-data/</code> 絕對不打包發布進網站。</li>
               <li><strong>CSV 匯出標準</strong>：採用含 BOM 標記之 UTF-8 編碼，直接用 Excel 開啟不產生亂碼。</li>
-              <li><strong>每週持續擴充</strong>：採用模組化設計，未來每週將持續增加 ICP-MS 檢量線計算、多批次彙整等實驗室利器。</li>
+              <li><strong>每週持續擴充</strong>：採用模組化設計，各工具放置於 <code>tools/</code> 獨立資料夾，首頁大廳自動展示。</li>
             </ul>
           </div>
         </section>
@@ -202,5 +273,11 @@
   </div>
 
   <script src="app.js"></script>
+  <script>
+    function switchToTool(viewName) {
+      const navBtn = document.querySelector(`.nav-item[data-view="${viewName}"]`);
+      if (navBtn) navBtn.click();
+    }
+  </script>
 </body>
 </html>

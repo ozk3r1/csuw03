@@ -65,7 +65,10 @@ function setupNavigation() {
       // 更新標題
       const pageTitle = document.getElementById('page-title');
       const pageDesc = document.getElementById('page-desc');
-      if (targetView === 'dilution') {
+      if (targetView === 'dashboard') {
+        pageTitle.textContent = '🏠 實驗室工具箱大廳';
+        pageDesc.textContent = '歡迎使用實驗室日常數據分析小工具，請由下方卡片挑選您需要的功能。';
+      } else if (targetView === 'dilution') {
         pageTitle.textContent = '🧪 溶液稀釋換算機';
         pageDesc.textContent = '依據 C₁V₁ = C₂V₂ 精準計算母液取樣體積與稀釋劑補足量，支援單點速算與多階梯度配製。';
       } else if (targetView === 'about') {
