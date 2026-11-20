@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多批次結果彙整 | 我的實驗室工具箱</title>
+  <link rel="stylesheet" href="../../style.css">
+  <style>
+    .upload-zone {
+      border: 2px dashed #93c5fd;
+      background-color: #f0f9ff;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1.5rem;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #0284c7;
+      background-color: #e0f2fe;
+    }
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .stats-bar {
+      display: flex;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-num {
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+    .badge-exceed {
+      background-color: #fee2e2;
+      color: #991b1b;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      border: 1px solid #fecaca;
+    }
+    .badge-ok {
+      background-color: #d1fae5;
+      color: #065f46;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .badge-loq {
+      color: #94a3b8;
+      font-style: italic;
+    }
+    .badge-detected {
+      color: #059669;
+      font-weight: 600;
+    }
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #0284c7;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .nav-back:hover {
+      text-decoration: underline;
+    }
+    .sub-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+    .sub-tab-btn {
+      background: none;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .sub-tab-btn:hover {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .sub-tab-btn.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- 側邊欄導覽 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">🔬</span>
+        <div>
+          <h2>實驗室工具箱</h2>
+          <span class="sub-text">Lab Toolbox</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="../../index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">工具箱大廳</span>
+        </a>
+        <div class="nav-section-title">實驗室小工具</div>
+        <a href="../units/index.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">稀釋與單位換算</span>
+          <span class="badge badge-success">上線</span>
+        </a>
+        <a href="index.html" class="nav-item active">
+          <span class="nav-icon">📑</span>
+          <span class="nav-text">多批次結果彙整</span>
+          <span class="badge badge-success">上線</span>
+        </a>
+        <a href="../../index.html" class="nav-item">
+          <span class="nav-icon">🧪</span>
+          <span class="nav-text">溶液稀釋換算機</span>
+          <span class="badge badge-success">第1週</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="privacy-badge">
+          <span class="shield-icon">🛡️</span>
+          <div>
+            <strong>100% 本機端運算</strong>
+            <p>數據絕不上傳任何伺服器</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 主內容區 -->
+    <main class="main-content">
+      <a href="../../index.html" class="nav-back">← 返回工具箱大廳</a>
+
+      <header class="topbar">
+        <div class="page-title-area">
+          <h1>📑 多批次結果彙整 (蔬菜農藥殘留)</h1>
+          <p>跨週跨批次自動對齊異構欄位與大小寫名稱，產生樣品矩陣總表，並快速抓出所有超標樣品。</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="tag tag-safe">🔒 100% 離線純本機計算</span>
+        </div>
+      </header>
+
+      <!-- 訊息提示區域 -->
+      <div id="alert-container" class="alert-container"></div>
+
+      <!-- 操作按鈕列 -->
+      <div class="action-card">
+        <div class="action-card-info">
+          <h3>快捷操作</h3>
+          <p>支援同時上傳多份批次 CSV 檔案，或點選載入教學範例（三週批次 + 容許量表）一鍵預覽。</p>
+        </div>
+        <div class="action-btn-group">
+          <button id="btn-load-example" class="btn btn-primary">
+            📂 載入範例資料 (三週批次+限量)
+          </button>
+          <button id="btn-export-matrix" class="btn btn-secondary">
+            📥 匯出彙整總表 CSV
+          </button>
+          <button id="btn-export-exceed" class="btn btn-outline-primary" style="color:#b91c1c; border-color:#f87171;">
+            🚨 匯出超標清單 CSV
+          </button>
+          <button id="btn-clear" class="btn btn-outline">
+            🔄 清除資料
+          </button>
+        </div>
+      </div>
+
+      <!-- 檔案上傳區塊 -->
+      <section class="card">
+        <div class="card-body">
+          <div id="upload-zone" class="upload-zone">
+            <div class="upload-icon">📁</div>
+            <h3 style="color:#0369a1; margin-bottom:0.4rem;">點擊選擇多個批次 CSV 檔案，或拖曳至此處</h3>
+            <p style="color:#64748b; font-size:0.88rem;">支援多檔同時上傳（可同時選取各週 batch_*.csv 及 pesticide_limits.csv）</p>
+            <input type="file" id="file-input" accept=".csv,text/csv" multiple style="display:none;">
+          </div>
+
+          <!-- 統計摘要列 -->
+          <div id="stats-bar" class="stats-bar" style="display:none;">
+            <div class="stat-pill">
+              <span>彙整批次：</span>
+              <span id="stat-batches" class="stat-num">0</span>
+            </div>
+            <div class="stat-pill">
+              <span>總樣品數：</span>
+              <span id="stat-samples" class="stat-num">0</span>
+            </div>
+            <div class="stat-pill" style="border-left: 4px solid var(--success);">
+              <span>合格樣品：</span>
+              <span id="stat-ok-samples" class="stat-num" style="color:#059669;">0</span>
+            </div>
+            <div class="stat-pill" style="border-left: 4px solid var(--danger);">
+              <span>違規超標：</span>
+              <span id="stat-exceed-samples" class="stat-num" style="color:#dc2626;">0</span>
+              <span id="stat-exceed-count" style="font-size:0.82rem; color:#991b1b;">(共 0 項次)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 區塊一：超過容許量超標清單 (優先展示高風險結果) -->
+      <section class="card" id="card-exceed" style="border-left: 4px solid var(--danger);">
+        <div class="card-header flex-between">
+          <div>
+            <h2 style="color:#991b1b; display:flex; align-items:center; gap:0.5rem;">
+              <span>🚨</span> 超過容許量違規清單 (Exceedance List)
+            </h2>
+            <p class="section-desc">系統自動篩選出濃度高於示範容許量之樣品，供實驗室快速預警與通報。</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="data-table" id="exceed-table">
+              <thead>
+                <tr>
+                  <th style="width: 45px;">#</th>
+                  <th>批次日期</th>
+                  <th>樣品編號</th>
+                  <th>蔬菜基質</th>
+                  <th>超標農藥名稱</th>
+                  <th class="th-result" style="color:#991b1b;">實測濃度 (mg/kg)</th>
+                  <th>示範容許量 (mg/kg)</th>
+                  <th>超標倍數</th>
+                  <th>判定說明</th>
+                </tr>
+              </thead>
+              <tbody id="exceed-tbody">
+                <tr>
+                  <td colspan="9" style="text-align:center; padding: 2rem; color:#94a3b8;">
+                    尚無資料，請上傳批次檔案或點選「載入範例資料」。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 區塊二：多批次樣品矩陣彙整總表 (Wide Format) -->
+      <section class="card" id="card-matrix">
+        <div class="card-header flex-between">
+          <div>
+            <h2>📊 多批次樣品矩陣彙整總表 (Wide Format)</h2>
+            <p class="section-desc">每列代表單一樣品，橫向展開所有檢驗農藥。紅字標註為超標檢出，綠字為合格檢出，淺灰為未檢出 (&lt;LOQ)。</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="data-table" id="matrix-table">
+              <thead id="matrix-thead">
+                <tr>
+                  <th style="width: 45px;">#</th>
+                  <th>批次日期</th>
+                  <th>樣品編號</th>
+                  <th>蔬菜基質</th>
+                  <th>農藥檢測數值</th>
+                  <th>綜合判定</th>
+                </tr>
+              </thead>
+              <tbody id="matrix-tbody">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding: 2rem; color:#94a3b8;">
+                    尚無資料，請上傳批次檔案或點選「載入範例資料」。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 規格與容許量標準說明卡片 -->
+      <section class="card">
+        <div class="card-header">
+          <h2>📐 示範容許量標準與判定邏輯說明</h2>
+        </div>
+        <div class="card-body prose">
+          <div class="table-responsive" style="margin-bottom: 1rem;">
+            <table class="data-table" style="max-width: 600px;">
+              <thead>
+                <tr>
+                  <th>農藥名稱 (Analyte)</th>
+                  <th>示範容許量 MRL (mg/kg)</th>
+                  <th>定量極限 LOQ (mg/kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Carbofuran (加保扶)</strong></td><td>0.02</td><td>0.01</td></tr>
+                <tr><td><strong>Imidacloprid (益達胺)</strong></td><td>0.5</td><td>0.01</td></tr>
+                <tr><td><strong>Acetamiprid (亞滅培)</strong></td><td>0.2</td><td>0.01</td></tr>
+                <tr><td><strong>Chlorpyrifos (陶斯松)</strong></td><td>0.05</td><td>0.01</td></tr>
+                <tr><td><strong>Fipronil (芬普尼)</strong></td><td>0.005</td><td>0.01</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><strong>異構相容</strong>：第二週檔案的欄位（如 <code>SampleID</code>, <code>基質</code>, <code>化合物</code>, <code>Conc. mg/kg</code>）及全大寫農藥名（如 <code>CARBOFURAN</code>）系統均自動對齊。</li>
+            <li><strong>未檢出處理</strong>：數值為 <code>&lt;LOQ</code> 一律判定為合格（未檢出），不標註超標。</li>
+            <li><strong>超標判定</strong>：實測濃度嚴格大於容許量時（$C > MRL$）判定為超標，並於總表以紅色警籤高亮，同時收錄至超標清單。</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="calculator.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
