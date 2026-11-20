@@ -1,0 +1,14 @@
+# 依賴套件與打包產物
+node_modules/
+dist/
+build/
+.cache/
+
+# 本機原始範例資料庫（嚴禁上傳進網站）
+sample-data/
+
+# 系統暫存與編輯器設定
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

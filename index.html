@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的實驗室工具箱 | Lab Toolbox</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- 側邊欄導覽 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">🔬</span>
+        <div>
+          <h2>實驗室工具箱</h2>
+          <span class="sub-text">Lab Toolbox v1.0</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-title">工具選單</div>
+        <button class="nav-item active" data-view="dilution">
+          <span class="nav-icon">🧪</span>
+          <span class="nav-text">溶液稀釋換算機</span>
+          <span class="badge badge-success">第1週</span>
+        </button>
+
+        <div class="nav-section-title">後續規劃 (每週新增)</div>
+        <button class="nav-item disabled" title="即將於下一週推出">
+          <span class="nav-icon">📈</span>
+          <span class="nav-text">ICP-MS 檢量線計算機</span>
+          <span class="badge badge-muted">敬請期待</span>
+        </button>
+        <button class="nav-item disabled" title="即將推出">
+          <span class="nav-icon">📑</span>
+          <span class="nav-text">多批次數據彙整工具</span>
+          <span class="badge badge-muted">敬請期待</span>
+        </button>
+
+        <div class="nav-section-title">專案資訊</div>
+        <button class="nav-item" data-view="about">
+          <span class="nav-icon">ℹ️</span>
+          <span class="nav-text">規格與隱私聲明</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="privacy-badge">
+          <span class="shield-icon">🛡️</span>
+          <div>
+            <strong>100% 本機端運算</strong>
+            <p>數據絕不上傳任何伺服器</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 主內容區 -->
+    <main class="main-content">
+      <!-- 頂部資訊列 -->
+      <header class="topbar">
+        <div class="page-title-area">
+          <h1 id="page-title">🧪 溶液稀釋換算機</h1>
+          <p id="page-desc">依據 $C_1V_1 = C_2V_2$ 精準計算母液取樣體積與稀釋劑補足量，支援單點速算與多階梯度配製。</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="tag tag-safe">🔒 離線計算安全</span>
+        </div>
+      </header>
+
+      <!-- 訊息提示區域 -->
+      <div id="alert-container" class="alert-container"></div>
+
+      <!-- 工具 1：溶液稀釋換算機視圖 -->
+      <div id="view-dilution" class="content-view active">
+        <!-- 頂部操作列：載入範例、匯出 CSV、清除 -->
+        <div class="action-card">
+          <div class="action-card-info">
+            <h3>快捷操作區</h3>
+            <p>可一鍵帶入常見的標準梯度配置範例，或將目前的計算結果匯出為 Excel CSV 檔。</p>
+          </div>
+          <div class="action-btn-group">
+            <button id="btn-load-example" class="btn btn-primary">
+              📂 載入範例資料
+            </button>
+            <button id="btn-export-csv" class="btn btn-secondary">
+              📥 匯出 CSV 結果
+            </button>
+            <button id="btn-clear" class="btn btn-outline">
+              🔄 清除重設
+            </button>
+          </div>
+        </div>
+
+        <!-- 區塊一：母液基礎設定 -->
+        <section class="card">
+          <div class="card-header">
+            <h2>1. 母液 (Stock Solution) 與溶劑設定</h2>
+          </div>
+          <div class="card-body grid-3">
+            <div class="form-group">
+              <label for="stock-conc">母液濃度 (C₁)</label>
+              <div class="input-with-unit">
+                <input type="number" id="stock-conc" value="1000" min="0" step="any" placeholder="例如：1000">
+                <select id="stock-conc-unit">
+                  <option value="ppm">ppm (mg/L)</option>
+                  <option value="ppb">ppb (µg/L)</option>
+                  <option value="M">M (mol/L)</option>
+                  <option value="mM">mM (mmol/L)</option>
+                  <option value="µM">µM (µmol/L)</option>
+                  <option value="%">% (w/v)</option>
+                </select>
+              </div>
+              <span class="help-text">原始高濃度標準液或儲備液濃度</span>
+            </div>
+
+            <div class="form-group">
+              <label for="volume-unit">目標體積單位</label>
+              <select id="volume-unit">
+                <option value="mL">毫升 (mL)</option>
+                <option value="µL">微升 (µL)</option>
+                <option value="L">公升 (L)</option>
+              </select>
+              <span class="help-text">配製完成後的總體積單位</span>
+            </div>
+
+            <div class="form-group">
+              <label for="diluent-name">稀釋劑名稱 (選填)</label>
+              <input type="text" id="diluent-name" value="2% 硝酸溶液 (HNO3)" placeholder="例如：純水、2% HNO3">
+              <span class="help-text">用於產出實驗配製操作指引</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 區塊二：配製點清單（支援多點梯度） -->
+        <section class="card">
+          <div class="card-header flex-between">
+            <div>
+              <h2>2. 目標配製點與計算結果清單</h2>
+              <p class="section-desc">系統自動計算每個濃度點所需的「母液吸取量」與「稀釋劑補充量」。</p>
+            </div>
+            <button id="btn-add-row" class="btn btn-sm btn-outline-primary">
+              ➕ 新增配製點
+            </button>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table" id="dilution-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>目標濃度 (C₂)</th>
+                    <th>目標總體積 (V₂)</th>
+                    <th>備註說明</th>
+                    <th class="th-result">需取母液體積 (V₁)</th>
+                    <th class="th-result">需補稀釋劑體積</th>
+                    <th class="th-result">稀釋倍率</th>
+                    <th style="width: 70px;">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="dilution-rows">
+                  <!-- 動態生成的列 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 區塊三：配製操作指南提示卡 -->
+        <section class="card card-summary">
+          <div class="card-header">
+            <h2>3. 實驗操作指引摘要</h2>
+          </div>
+          <div class="card-body">
+            <div id="recipe-summary" class="recipe-container">
+              <!-- 動態產生的清晰操作文字 -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 視圖：規格與隱私聲明 -->
+      <div id="view-about" class="content-view">
+        <section class="card">
+          <div class="card-header">
+            <h2>關於本工具箱與 SPEC.md 規範</h2>
+          </div>
+          <div class="card-body prose">
+            <p>本專案嚴格依據 <code>SPEC.md</code> 規格標準建置：</p>
+            <ul>
+              <li><strong>完全本機端運算 (100% Client-Side)</strong>：所有運算均在您的瀏覽器本機記憶體中完成，無網路傳輸，兼顧零延遲與完全隱私。</li>
+              <li><strong>範例資料機制</strong>：線上「載入範例資料」讀取自 <code>examples/</code> 虛擬公開示範檔，本機開發用的 <code>sample-data/</code> 絕對不打包發布進網站。</li>
+              <li><strong>CSV 匯出標準</strong>：採用含 BOM 標記之 UTF-8 編碼，直接用 Excel 開啟不產生亂碼。</li>
+              <li><strong>每週持續擴充</strong>：採用模組化設計，未來每週將持續增加 ICP-MS 檢量線計算、多批次彙整等實驗室利器。</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

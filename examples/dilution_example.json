@@ -1,0 +1,16 @@
+{
+  "title": "ICP-MS 標準溶液梯度配製範例",
+  "description": "由 1000 ppm 母液配製成 6 個檢量線濃度點（0.05 至 10 ppm），各 50 mL",
+  "stock_concentration": 1000,
+  "concentration_unit": "ppm",
+  "volume_unit": "mL",
+  "diluent_name": "2% 硝酸溶液 (HNO3)",
+  "points": [
+    { "target_concentration": 0.05, "target_volume": 50, "note": "檢量線點 1 (低濃度)" },
+    { "target_concentration": 0.1,  "target_volume": 50, "note": "檢量線點 2" },
+    { "target_concentration": 0.5,  "target_volume": 50, "note": "檢量線點 3" },
+    { "target_concentration": 1.0,  "target_volume": 50, "note": "檢量線點 4 (中間點)" },
+    { "target_concentration": 5.0,  "target_volume": 50, "note": "檢量線點 5" },
+    { "target_concentration": 10.0, "target_volume": 50, "note": "檢量線點 6 (高濃度)" }
+  ]
+}
